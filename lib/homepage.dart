@@ -30,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.circular(30.0),
                   )),
               onPressed: () async {
-                final SharedPreferences sharedPreferences =
+                SharedPreferences sharedPreferences =
                     await SharedPreferences.getInstance();
                 sharedPreferences.remove('email');
                 Navigator.pushReplacement(

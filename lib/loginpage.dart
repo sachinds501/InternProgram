@@ -20,36 +20,42 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
 
   set _password(String? _password) {}
-
   /* Storage permission*/
 
-  // void initState() {
-  //   getValidationData().whenComplete(() async => Timer(
-  //       Duration(seconds: 2),
-  //       () => (finalEmail == null
-  //           ? Navigator.of(context).pushReplacement(
-  //               MaterialPageRoute(builder: (context) => const LoginPage()))
-  //           : HomeScreen())));
-  //   super.initState();
-  // }
-
-  Future<void> main() async {
-    WidgetsFlutterBinding.ensureInitialized();
-    SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-    var email = sharedPreferences.getString('email');
-    print(email);
-    runApp(MaterialApp(home: email == null ? LoginPage() : HomeScreen()));
+  void requestPermission() async {
+    var status = await Permission.storage.status;
+    if (!status.isGranted) {
+      await Permission.storage.request();
+    }
+    var status1 = await Permission.manageExternalStorage.status;
+    if (!status1.isGranted) {
+      await Permission.manageExternalStorage.request();
+    }
   }
-  // Future getValidationData() async {
-  //   WidgetsFlutterBinding.ensureInitialized();
-  //   final SharedPreferences sharedPreferences =
-  //       await SharedPreferences.getInstance();
-  //   var obtainedEmail = sharedPreferences.getString('email');
-  //   setState(() {
-  //     finalEmail = obtainedEmail;
-  //   });
-  //   print(finalEmail);
-  // }
+
+  @override
+  void initState() {
+    requestPermission();
+
+    getValidationData().whenComplete(() async => Timer(
+        Duration(seconds: 2),
+        () => (finalEmail == null
+            ? Navigator.of(context).pushReplacement(
+                MaterialPageRoute(builder: (context) => const LoginPage()))
+            : HomeScreen())));
+    super.initState();
+  }
+
+  Future getValidationData() async {
+    WidgetsFlutterBinding.ensureInitialized();
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    var obtainedEmail = sharedPreferences.getString('email');
+    setState(() {
+      finalEmail = obtainedEmail;
+    });
+    print(finalEmail);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -175,7 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                                 borderRadius: BorderRadius.circular(30.0),
                               )),
                           onPressed: () async {
-                            final SharedPreferences sharedPreferences =
+                            SharedPreferences sharedPreferences =
                                 await SharedPreferences.getInstance();
                             sharedPreferences.setString(
                                 'email', emailTextEditingController.text);
@@ -210,7 +216,7 @@ class _LoginPageState extends State<LoginPage> {
                   fontSize: 15),
             ),
             const SizedBox(
-              height: 25,
+              height: 20,
             ),
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -220,9 +226,9 @@ class _LoginPageState extends State<LoginPage> {
                     style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(255, 29, 129, 175),
                         onPrimary: Colors.white,
-                        minimumSize: const Size(70, 40),
+                        minimumSize: const Size(70, 30),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(20.0),
                         )),
                     onPressed: () {},
                     child: Text("Facebook")),
@@ -233,13 +239,21 @@ class _LoginPageState extends State<LoginPage> {
                     style: ElevatedButton.styleFrom(
                         primary: Color.fromARGB(230, 86, 75, 187),
                         onPrimary: Colors.white,
-                        minimumSize: const Size(70, 40),
+                        minimumSize: const Size(70, 30),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
+                          borderRadius: BorderRadius.circular(20.0),
                         )),
                     onPressed: () {},
                     child: Text(" Google ")),
               ],
+            ),
+            SizedBox(
+              height: 20,
+            ),
+            Text(
+              "Don't have an account? Create one.",
+              textAlign: TextAlign.end,
+              style: TextStyle(fontSize: 12, color: Colors.grey),
             )
           ],
         ),
